@@ -1,5 +1,5 @@
 <template>
-  <div class="el-picker-panel el-date-range-picker">
+  <div class="el-picker-panel el-date-range-picker socar-date-range-picker">
     <div class="el-picker-panel__body-wrapper">
       <div v-if="shortcuts" class="el-picker-panel__sidebar">
         <button
@@ -28,7 +28,8 @@
             </button>
             <div>{{ leftLabel }}</div>
           </div>
-          <!-- <QuarterTable
+          <BasicQuarterTable
+            v-if="unit === 'quarter'"
             :min-date="minDate"
             :max-date="maxDate"
             :range-state="rangeState"
@@ -37,8 +38,9 @@
             @pick="handleRangePick"
             @select="onSelect"
             @changerange="handleChangeRange"
-          /> -->
+          />
           <BasicMonthTable
+            v-else
             :min-date="minDate"
             :max-date="maxDate"
             :range-state="rangeState"
@@ -63,7 +65,8 @@
             </button>
             <div>{{ rightLabel }}</div>
           </div>
-          <!-- <QuarterTable
+          <BasicQuarterTable
+            v-if="unit === 'quarter'"
             :min-date="minDate"
             :max-date="maxDate"
             :date="rightDate"
@@ -72,8 +75,9 @@
             @pick="handleRangePick"
             @select="onSelect"
             @changerange="handleChangeRange"
-          /> -->
+          />
           <BasicMonthTable
+            v-else
             :min-date="minDate"
             :max-date="maxDate"
             :date="rightDate"
@@ -95,7 +99,7 @@ import dayjs from 'dayjs'
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import { useQuarterRangeHeader } from './useQuarterPanel'
 import { useRangePicker } from './useRangePicker'
-// import BasicQuarterTable from './BasicQuarterTable.vue'
+import BasicQuarterTable from './BasicQuarterTable.vue'
 import BasicMonthTable from './BasicMonthTable.vue'
 // isSameAfter isSameBefort
 dayjs.extend(quarterOfYear)
@@ -104,8 +108,9 @@ export default defineComponent({
   name: 'DateRangePanel',
   components: {
     // QuarterTable,
-    BasicMonthTable
-    // BasicQuarterTable
+    // eslint-disable-next-line vue/no-unused-components
+    BasicMonthTable,
+    BasicQuarterTable
   },
   props: {
     defaultValue: {
@@ -126,9 +131,13 @@ export default defineComponent({
       default() {
         return null
       }
+    },
+    unit: {
+      type: String,
+      default: null
     }
   },
-  emits: ['pick'],
+  emits: ['pick', 'shortcut-change'],
   setup(props) {
     const {
       minDate,
@@ -139,7 +148,8 @@ export default defineComponent({
       disabledDate,
       handleRangePick,
       onSelect,
-      handleChangeRange
+      handleChangeRange,
+      handleShortcutClick
     } = useRangePicker(props)
 
     const {
@@ -169,7 +179,8 @@ export default defineComponent({
       disabledDate,
       onSelect,
       handleRangePick,
-      handleChangeRange
+      handleChangeRange,
+      handleShortcutClick
     }
   }
 })

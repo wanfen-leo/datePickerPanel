@@ -1,8 +1,9 @@
 <template>
   <table
     role="grid"
-    class="el-year-table el-month-table"
+    class="el-year-table el-month-table socar-year-table"
     @click="handleYearTableClick"
+    @mousemove="handleMouseMove"
   >
     <tbody>
       <tr v-for="(row, key) in rows" :key="key">
@@ -10,8 +11,7 @@
           v-for="(cell, key_) in row"
           :key="key_"
           :class="getCellStyle(cell)"
-          @keydown.space.prevent.stop="handleMonthTableClick"
-          @keydown.enter.prevent.stop="handleMonthTableClick"
+          @click="handleMonthTableClick"
         >
           <div>
             <span class="cell">
@@ -24,11 +24,10 @@
   </table>
 </template>
 <script>
-import { computed, defineComponent, ref } from 'vue'
-// import { castArray, hasClass, rangeArr } from './utils'
+import { computed, watch, defineComponent, ref } from 'vue'
 import dayjs from 'dayjs'
-// import _ from 'lodash'
-
+import _ from 'lodash'
+import { castArray, hasClass, rangeArr } from './utils'
 export default defineComponent({
   name: 'BasicYearTable',
   props: {
@@ -44,6 +43,13 @@ export default defineComponent({
         return null
       }
     },
+    date: {
+      type: Object,
+      default() {
+        return null
+      }
+    },
+
     disabledDate: {
       type: Function,
       default() {
@@ -57,7 +63,9 @@ export default defineComponent({
       }
     }
   },
-  setup(props) {
+  setup(props, { emit }) {
+    const lastRow = ref()
+    const lastColumn = ref()
     const tableRows = ref([[], [], []])
     const removeLastTwoElements = (arr) => {
       if (arr.length === 0) {
@@ -91,17 +99,19 @@ export default defineComponent({
 
         if (cell.start) {
           style['start-date'] = true
+          style.current = false
         }
 
         if (cell.end) {
           style['end-date'] = true
+          style.current = false
         }
       }
 
       return style
     }
     const startYear = computed(() => {
-      return Math.floor(props.minDate.year() / 10) * 10
+      return Math.floor(props.date.year() / 10) * 10
     })
     const rows = computed(() => {
       const rows = tableRows.value
@@ -124,7 +134,8 @@ export default defineComponent({
           cell.type = 'normal'
 
           const index = i * 4 + j
-          const calTime = props.minDate.startOf('year').add(index, 'year')
+
+          const calTime = props.date.startOf('year').add(index, 'year')
 
           const calEndDate =
             props.rangeState.endDate ||
@@ -146,7 +157,7 @@ export default defineComponent({
               calTime.isSameOrAfter(calEndDate, 'year')
             )
 
-          if (props.minDate?.isSameOrAfter(calEndDate, 'year')) {
+          if (props.minDate?.isSameOrAfter(calEndDate)) {
             cell.start = !!(calEndDate && calTime.isSame(calEndDate, 'year'))
             cell.end = props.minDate && calTime.isSame(props.minDate, 'year')
           } else {
@@ -162,15 +173,77 @@ export default defineComponent({
           }
 
           cell.text = startYear.value + i * 4 + j
+          cell.year = i * 4 + j
+          cell.disabled = props.disabledDate?.(calTime.toDate()) || false
         }
       }
       return removeLastTwoElements(rows)
     })
+    const handleMouseMove = (event) => {
+      if (!props.rangeState.selecting) return
+
+      let target = event.target
+
+      if (target.tagName === 'A') {
+        target = target.parentNode?.parentNode
+      }
+      if (target.tagName === 'DIV') {
+        target = target.parentNode
+      }
+      if (target.tagName !== 'TD') return
+
+      const row = target.parentNode.rowIndex
+      const column = target.cellIndex
+      console.log()
+      if (rows.value[row][column].disabled) return
+
+      if (row !== lastRow.value || column !== lastColumn.value) {
+        lastRow.value = row
+        lastColumn.value = column
+
+        emit('changerange', {
+          selecting: true,
+          endDate: props.date.startOf('year').add(row * 4 + column, 'year')
+        })
+      }
+    }
+
+    const handleMonthTableClick = (event) => {
+      const target = event.target.closest('td')
+
+      if (target?.tagName !== 'TD') return
+      if (hasClass(target, 'disabled')) return
+      const column = target.cellIndex
+
+      const row = target.parentNode.rowIndex
+
+      const year = row * 4 + column
+      const newDate = props.date.startOf('year').add(year, 'year')
+
+      if (!props.rangeState.selecting) {
+        emit('pick', { minDate: newDate, maxDate: null })
+        emit('select', true)
+      } else {
+        if (props.minDate && newDate >= props.minDate) {
+          emit('pick', { minDate: props.minDate, maxDate: newDate })
+        } else {
+          emit('pick', { minDate: newDate, maxDate: props.minDate })
+        }
+        emit('select', false)
+      }
+    }
 
     return {
       rows,
-      getCellStyle
+      getCellStyle,
+      handleMouseMove,
+      handleMonthTableClick
     }
   }
 })
 </script>
+<style lang="scss">
+.socar-year-table td {
+  padding: 20px 0px;
+}
+</style>

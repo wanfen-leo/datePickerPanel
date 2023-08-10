@@ -64,7 +64,6 @@ export const useRangePicker = (props) => {
     )
   }
   const onSelect = (selecting) => {
-    console.log('onSelect')
     rangeState.value.selecting = selecting
     if (!selecting) {
       rangeState.value.endDate = null
@@ -74,10 +73,15 @@ export const useRangePicker = (props) => {
     rangeState.value = val
   }
 
+  const handleShortcutClick = (val) => {
+    emit('shortcut-change', val, props.unit)
+  }
+
   watch(
     () => props.defaultValue,
     (value) => {
       if (value) {
+        console.log(value)
         restoreDefault()
       }
     },
@@ -95,6 +99,7 @@ export const useRangePicker = (props) => {
     disabledDate,
     onSelect,
     handleRangePick,
-    handleChangeRange
+    handleChangeRange,
+    handleShortcutClick
   }
 }

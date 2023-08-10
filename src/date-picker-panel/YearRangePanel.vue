@@ -1,17 +1,19 @@
 <template>
-  <div class="el-picker-panel el-date-picker">
+  <div
+    class="el-picker-panel el-date-picker socar-date-range-picker year-range"
+  >
     <div class="el-picker-panel__body-wrapper">
-      <!-- <div class="el-picker-panel__sidebar">
+      <div v-if="shortcuts" class="el-picker-panel__sidebar">
         <button
           v-for="(shortcut, key) in shortcuts"
           :key="key"
           type="button"
-          :class="ppNs.e('shortcut')"
+          class="el-picker-panel__shortcut"
           @click="handleShortcutClick(shortcut)"
         >
           {{ shortcut.text }}
         </button>
-      </div> -->
+      </div>
       <div class="el-picker-panel__body">
         <div class="el-date-picker__header el-date-picker__header--bordered">
           <span class="el-date-picker__prev-btn">
@@ -44,8 +46,12 @@
           <BasicYearTable
             :min-date="minDate"
             :max-date="maxDate"
+            :date="innerDate"
             :range-state="rangeState"
             :disabled-date="disabledDate"
+            @pick="handleRangePick"
+            @select="onSelect"
+            @changerange="handleChangeRange"
           />
         </div>
       </div>
@@ -53,7 +59,7 @@
   </div>
 </template>
 <script>
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useRangePicker } from './useRangePicker'
 import BasicYearTable from './BasicYearTable.vue'
 export default defineComponent({
@@ -80,37 +86,67 @@ export default defineComponent({
       default() {
         return null
       }
+    },
+    unit: {
+      type: String,
+      default: 'year'
     }
   },
   setup(props) {
-    const { minDate, maxDate, leftDate, rightDate, rangeState, disabledDate } =
-      useRangePicker(props)
+    const {
+      minDate,
+      maxDate,
+      leftDate,
+      rightDate,
+      rangeState,
+      disabledDate,
+      handleRangePick,
+      onSelect,
+      handleChangeRange,
+      handleShortcutClick
+    } = useRangePicker(props)
+
+    const innerDate = ref(_.cloneDeep(minDate.value))
 
     const year = computed(() => {
-      return minDate.value.year()
+      return innerDate.value.year()
     })
-
     const yearLabel = computed(() => {
       const startYear = Math.floor(year.value / 10) * 10
       return `${startYear} - ${startYear + 9}`
     })
 
     const moveByYear = (forward) => {
-      const currentDate = minDate.value
+      const currentDate = innerDate.value
       const action = forward ? 'add' : 'subtract'
-      minDate.value = currentDate[action](10, 'year')
+      innerDate.value = currentDate[action](10, 'year')
     }
     return {
       minDate,
       maxDate,
       leftDate,
       rightDate,
+      innerDate,
       rangeState,
       yearLabel,
       moveByYear,
-      disabledDate
+      disabledDate,
+      handleRangePick,
+      onSelect,
+      handleChangeRange,
+      handleShortcutClick
     }
   }
 })
 </script>
-<style lang="scss"></style>
+<style lang="scss">
+.year-range .el-picker-panel__body {
+  width: calc(100% - 120px);
+  .el-picker-panel__content {
+    width: auto;
+    .socar-year-table td {
+      padding: 8px 0px;
+    }
+  }
+}
+</style>

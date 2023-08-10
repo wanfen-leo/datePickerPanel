@@ -60,7 +60,8 @@ export default defineComponent({
   emits: ['pick', 'select', 'changerange'],
   setup(props, { emit }) {
     console.log(props)
-
+    const lastRow = ref()
+    const lastColumn = ref()
     const rows = computed(() => {
       const rows = []
 
@@ -169,8 +170,10 @@ export default defineComponent({
         emit('select', true)
       } else {
         if (props.minDate && newDate >= props.minDate) {
+          console.log('11111111')
           emit('pick', { minDate: props.minDate, maxDate: newDate })
         } else {
+          console.log('2222')
           emit('pick', { minDate: newDate, maxDate: props.minDate })
         }
         emit('select', false)
@@ -190,11 +193,13 @@ export default defineComponent({
       if (target.tagName !== 'TD') return
       const column = target.cellIndex
       if (rows.value[column].disabled) return
-
-      emit('changerange', {
-        selecting: true,
-        endDate: props.date.startOf('year').quarter(target.cellIndex + 1)
-      })
+      if (column !== lastColumn.value) {
+        lastColumn.value = column
+        emit('changerange', {
+          selecting: true,
+          endDate: props.date.startOf('year').quarter(target.cellIndex + 1)
+        })
+      }
     }
 
     return {
