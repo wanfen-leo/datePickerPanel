@@ -24,10 +24,10 @@
   </table>
 </template>
 <script>
-import { computed, watch, defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import dayjs from 'dayjs'
-import _ from 'lodash'
-import { castArray, hasClass, rangeArr } from './utils'
+
+import { hasClass } from './utils'
 export default defineComponent({
   name: 'BasicYearTable',
   props: {
@@ -242,8 +242,4 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.socar-year-table td {
-  padding: 20px 0px;
-}
-</style>
+<style lang="scss"></style>

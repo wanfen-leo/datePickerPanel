@@ -60,7 +60,6 @@ export default defineComponent({
   emits: ['pick', 'select', 'changerange'],
   setup(props, { emit }) {
     console.log(props)
-    const lastRow = ref()
     const lastColumn = ref()
     const rows = computed(() => {
       const rows = []

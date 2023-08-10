@@ -6,7 +6,6 @@
           :default-value="defaultMonthValue"
           :range="range"
           unit="month"
-          :shortcuts="shortcutMap.month"
           @pick="handelMonthChange"
           @shortcut-change="shortClick"
         />
@@ -16,7 +15,6 @@
         <DateRangePanel
           :default-value="defaultQuarter"
           :range="range"
-          :shortcuts="shortcutMap.quarter"
           unit="quarter"
           @shortcut-change="shortClick"
           @pick="handelQuarterChange"
@@ -27,7 +25,6 @@
           :default-value="defaultYear"
           :range="range"
           unit="year"
-          :shortcuts="shortcutMap.year"
           @shortcut-change="shortClick"
           @pick="handelYearChange"
         />
@@ -38,9 +35,9 @@
 <script>
 import { defineComponent, ref } from 'vue'
 import dayjs from 'dayjs'
-import DateRangePanel from './DateRangePanel.vue'
-import YearRangePanel from './YearRangePanel.vue'
-import DateSliderbar from './DateSliderbar.vue'
+import DateRangePanel from './date-picker-panel/DateRangePanel.vue'
+import YearRangePanel from './date-picker-panel//YearRangePanel.vue'
+
 export default defineComponent({
   components: {
     DateRangePanel,
@@ -157,49 +154,4 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.socar-leitianpeng-test-page {
-  width: 100%;
-  height: 100%;
-
-  .leitianpeng-filter-wrapper {
-    width: 100%;
-    height: 50px;
-    border-radius: 4px;
-    border: 1px solid #009688;
-  }
-  .socar-leitianpeng-data-picker-panel {
-    width: 600px;
-    height: 400px;
-  }
-
-  .date-panel {
-    display: flex;
-    margin-bottom: 10px;
-
-    .el-date-picker {
-      width: auto;
-    }
-    margin-bottom: 10px;
-    .socar-date-range-picker .el-picker-panel__body {
-      margin-left: 0px;
-    }
-
-    .socar-date-range-picker .el-picker-panel__body-wrapper {
-      display: flex;
-      .el-picker-panel__sidebar {
-        width: auto;
-        display: flex;
-        position: relative;
-        flex-direction: column;
-        overflow: inherit;
-
-        .el-picker-panel__shortcut {
-          width: 100px;
-          padding: 4px 6px;
-        }
-      }
-    }
-  }
-}
-</style>
+<style lang="scss"></style>

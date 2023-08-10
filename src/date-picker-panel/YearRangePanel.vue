@@ -60,6 +60,7 @@
 </template>
 <script>
 import { computed, defineComponent, ref } from 'vue'
+import _ from 'lodash'
 import { useRangePicker } from './useRangePicker'
 import BasicYearTable from './BasicYearTable.vue'
 export default defineComponent({
@@ -139,14 +140,4 @@ export default defineComponent({
   }
 })
 </script>
-<style lang="scss">
-.year-range .el-picker-panel__body {
-  width: calc(100% - 120px);
-  .el-picker-panel__content {
-    width: auto;
-    .socar-year-table td {
-      padding: 8px 0px;
-    }
-  }
-}
-</style>
+<style lang="scss"></style>
