@@ -1,6 +1,6 @@
 {
   "name": "date-picker-panel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -11,6 +11,7 @@
     "core-js": "^3.8.3",
     "dayjs": "^1.11.9",
     "element-plus": "^2.3.9",
+    "eslint": "^8.47.0",
     "lodash": "^4.17.21",
     "vue": "^3.2.13"
   },
@@ -20,7 +21,6 @@
     "@vue/cli-plugin-babel": "~5.0.0",
     "@vue/cli-plugin-eslint": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
-    "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3"
   },
   "eslintConfig": {
@@ -33,6 +33,7 @@
       "eslint:recommended"
     ],
     "parserOptions": {
+      "requireConfigFile": false,
       "parser": "@babel/eslint-parser"
     },
     "rules": {}
